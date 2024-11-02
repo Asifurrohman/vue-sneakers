@@ -10,16 +10,15 @@
                     <option value="price-asc">By Price (Lowest to Highest)</option>
                     <option value="price-desc">By Price (Highest to Lowest)</option>
                 </select> -->
-                <select v-model="filters.sortBy" @change="onChangeSelect" name="sorting" class="py-2 px-3 border rounded-md outline-none">
-                    <option value="">Sort By</option>
+                <select @change="onChangeSelect" name="sorting" class="py-2 px-3 border rounded-md outline-none">
                     <option value="title-asc">By Name (A - Z)</option>
                     <option value="title-desc">By Name (Z - A)</option>
-                    <option value="price-asc">By Price (Lowest to Highest)</option>
-                    <option value="price-desc">By Price (Highest to Lowest)</option>
+                    <option value="price">By Price (Lowest to Highest)</option>
+                    <option value="-price">By Price (Highest to Lowest)</option>
                 </select>
                 <div class="relative">
                     <img src="/img/search.svg" alt="" class="absolute left-4 top-3">
-                    <input v-model="filters.searchQuery" class="border focus:border-gray-400 rounded-md py-2 pl-11 pr-4 outline-none" type="text" placeholder="search...">
+                    <input class="border focus:border-gray-400 rounded-md py-2 pl-11 pr-4 outline-none" type="text" placeholder="search...">
                 </div>
             </div>
         </div>
@@ -38,6 +37,52 @@ import { ref, defineProps, onMounted, computed ,watch } from 'vue'
 import Card from '@/components/Card.vue'
 import axios from 'axios'
 
+const items = ref([])
+
+// const filters = ref({
+//     searchQuery: '',
+//     sortBy: ''
+// })
+
+const searchQuery = ref('')
+const sortBy = ref('')
+
+const onChangeSelect = (event) => {
+    sortBy.value = event.target.value
+    console.log(event.target.value)
+};
+
+const fetchItems = async () => {
+    try{
+        const response = await axios.get('https://70e0dec5c69ca79f.mokky.dev/items')
+        items.value = response.data
+    } catch(error){
+        console.error('Error fetching data AKA kesalahan berpikir', error)
+    }
+}
+
+onMounted(fetchItems)
+
+watch(sortBy, async () => {
+    try{
+        const response = await axios.get('https://70e0dec5c69ca79f.mokky.dev/items?sortBy=' + sortBy.value)
+        items.value = response.data
+    } catch(error){
+        console.error('Error fetching data AKA kesalahan berpikir', error)
+    }
+})
+
+const onClickAdd = () => {
+    alert('Alerta Maxima')
+}
+</script>
+
+<!-- <script setup>
+import { ref, defineProps, onMounted, computed ,watch } from 'vue'
+
+import Card from '@/components/Card.vue'
+import axios from 'axios'
+
 defineProps({
     
 })
@@ -49,23 +94,23 @@ const filters = ref({
     sortBy: 'title-asc'
 })
 
-// const sortedAndFilteredItems = computed(() => {
-//     let filteredArray = items.value.filter(item => 
-//     item.title.toLowerCase().includes(filters.value.searchQuery.toLocaleLowerCase())
-//     )
+const sortedAndFilteredItems = computed(() => {
+    let filteredArray = items.value.filter(item => 
+    item.title.toLowerCase().includes(filters.value.searchQuery.toLocaleLowerCase())
+    )
 
-//     if (filters.value.sortBy === 'title-asc') {
-//         return filteredArray.sort((a, b) => a.title.localeCompare(b.title))
-//     } else if (filters.value.sortBy === 'title-desc') {
-//         return filteredArray.sort((a, b) => b.title.localeCompare(a.title))
-//     } else if (filters.value.sortBy === 'price-asc') {
-//         return filteredArray.sort((a, b) => a.price - b.price)
-//     } else if (filters.value.sortBy === 'price-desc') {
-//         return filteredArray.sort((a, b) => b.price - a.price)
-//     } else {
-//         return filteredArray
-//     }
-// })
+    if (filters.value.sortBy === 'title-asc') {
+        return filteredArray.sort((a, b) => a.title.localeCompare(b.title))
+    } else if (filters.value.sortBy === 'title-desc') {
+        return filteredArray.sort((a, b) => b.title.localeCompare(a.title))
+    } else if (filters.value.sortBy === 'price-asc') {
+        return filteredArray.sort((a, b) => a.price - b.price)
+    } else if (filters.value.sortBy === 'price-desc') {
+        return filteredArray.sort((a, b) => b.price - a.price)
+    } else {
+        return filteredArray
+    }
+})
 
 const onChangeSelect = () => {
     filters.value.sortBy = filters.value.sortBy
@@ -86,7 +131,7 @@ watch(filters.value, fetchItems)
 const onClickAdd = () => {
     alert('Alerta Maxima')
 }
-</script>
+</script> -->
 
 <style scoped>
 
